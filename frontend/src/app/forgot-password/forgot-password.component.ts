@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { SnackbarService } from '../services/snackbar.service';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -8,48 +7,38 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
 import { GlobalConstants } from '../shared/global-constants';
 
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss']
+  selector: 'app-forgot-password',
+  templateUrl: './forgot-password.component.html',
+  styleUrls: ['./forgot-password.component.scss']
 })
-export class SignupComponent implements OnInit {
+export class ForgotPasswordComponent implements OnInit {
 
-  signupForm: any = FormGroup;
+  forgotPasswordForm:any= FormGroup;
   responseMessage: any;
-
-  constructor(private formBuilder: FormBuilder,
-    private router: Router,
+  constructor(private formBuilder:FormBuilder,
     private userService: UserService,
-    private snackbarService: SnackbarService,
-    private dialogref: MatDialogRef<SignupComponent>,
+    private dialogref: MatDialogRef<ForgotPasswordComponent>,
     private ngxService: NgxUiLoaderService,
-  ) { }
+    private snackbarService: SnackbarService) { }
 
   ngOnInit(): void {
-    this.signupForm = this.formBuilder.group({
-      name: [null, [Validators.required, Validators.pattern(GlobalConstants.nameRegex)]],
-      email: [null, [Validators.required, Validators.pattern(GlobalConstants.emailRegex)]],
-      contactNumber: [null, [Validators.required, Validators.pattern(GlobalConstants.contactNumberRegex)]],
-      password: [null, [Validators.required]],
-    })
+    this.forgotPasswordForm=this.formBuilder.group({
+      email:[null,[Validators.required,Validators.pattern(GlobalConstants.emailRegex)]]
+    });
   }
 
   handleSubmit() {
     this.ngxService.start();
-    var formData = this.signupForm.value;
+    var formData = this.forgotPasswordForm.value;
     var data = {
-      name: formData.name,
-      email: formData.email,
-      contactNumber: formData.contactNumber,
-      password: formData.password
+      email: formData.email
     }
 
-    this.userService.signup(data).subscribe((response: any) => {
+    this.userService.forgotPassword(data).subscribe((response: any) => {
       this.ngxService.stop();
-      this.dialogref.close();
       this.responseMessage = response?.message;
+      this.dialogref.close();
       this.snackbarService.openSnackBar(this.responseMessage, "");
-      this.router.navigate(['/']);
     }, (error) => {
       // console.log(error);
       this.ngxService.stop();
